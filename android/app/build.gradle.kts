@@ -1,53 +1,57 @@
+// android/app/build.gradle.kts
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("dev.flutter.flutter-gradle-plugin")
-    // Add Google services if using Firebase
-    id("com.google.gms.google-services")
+    id("com.google.gms.google-services")  // remove if you’re not using Firebase
 }
 
 android {
-    namespace = "com.example.habitt_tracker"
+    namespace = "com.example.habitt_tracker"      // ← change this if your package ID differs
     compileSdk = 34
 
-    ndkVersion = "27.0.12077973" // ✅ Fix NDK mismatch
-
     defaultConfig {
-        applicationId = "com.example.habitt_tracker"
-        minSdk = 21
+        applicationId = "com.example.habitt_tracker"  // ← must match your AndroidManifest
+        minSdk = 24                                  // supports Android 7.0+
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
-        // ✅ Needed for flutter_local_notifications
-        multiDexEnabled = true
-        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
+            // Turn OFF code shrinking (R8/ProGuard)
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            // Turn OFF resource shrinking
+            isShrinkResources = false
+
+            // If you later set up signingConfigs, you can uncomment this:
+            // signingConfig = signingConfigs.getByName("release")
         }
     }
 
     compileOptions {
-        // ✅ Required for flutter_local_notifications
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
 }
 
 dependencies {
-    implementation("androidx.multidex:multidex:2.0.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10")
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.8.0")
+
+    // If you’re using Firebase, include these. Otherwise you can remove them:
+    // implementation(platform("com.google.firebase:firebase-bom:31.1.0"))
+    // implementation("com.google.firebase:firebase-analytics-ktx")
+    // implementation("com.google.firebase:firebase-firestore-ktx")
 }
 
-flutter {
-    source = "../.."
-}
+// For Firebase projects only; remove this line if you’re not using Firebase:
+apply(plugin = "com.google.gms.google-services")
